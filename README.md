@@ -83,7 +83,7 @@ cd mcp-warranty && cargo build --release
 ```toml
 server_id = "mcp_warranty"
 display_name = "Warranty Management"
-version = "1.0.0"
+version = "1.1.0"
 domain = "warranty"
 risk_level = "high"
 writes_allowed = "gated"
