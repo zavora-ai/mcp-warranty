@@ -1,179 +1,179 @@
 server_id = "mcp_warranty"
-display_name = "Warranty Management"
-version = "1.0.0"
+display_name = "Warranty"
+version = "1.1.0"
 domain = "warranty"
-sdk_version = "0.1.0"
+sdk_version = "0.2.0"
 risk_level = "high"
 writes_allowed = "gated"
 transports = ["stdio"]
 credentials = []
-governance_gates = []
+governance_gates = ["mrtr_approval"]
 environments = ["development", "staging", "production"]
 
 [[tools]]
 name = "create_product"
-description = "Create a product in the catalog"
+description = "Create a product in the catalog."
 risk_class = "internal_write"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "get_product"
-description = "Get a product by id"
+description = "Get a product by id."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "list_products"
-description = "List products by category"
+description = "List products, optionally by category."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "create_plan"
-description = "Create a warranty plan with coverage terms"
+description = "Create a warranty plan: kind (standard/extended/service_contract), duration months, covered_failures, exclusions, deductible, coverage_cap (0 = unlimited), transferable."
 risk_class = "internal_write"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "get_plan"
-description = "Get a warranty plan"
+description = "Get a warranty plan and its coverage terms."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "list_plans"
-description = "List warranty plans"
+description = "List warranty plans."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "register"
-description = "Register a unit under a plan (computes coverage window)"
+description = "Register a unit under a plan (binds serial + owner; computes the coverage window from the plan duration and purchase date)."
 risk_class = "internal_write"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "get_registration"
-description = "Get a registration by id or serial"
+description = "Get a registration by id or serial number."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "list_registrations"
-description = "List registrations by owner/status"
+description = "List registrations, optionally by owner and/or status."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "transfer_registration"
-description = "Transfer a registration to a new owner (if transferable)"
+description = "Transfer a registration to a new owner (only if the plan is transferable)."
 risk_class = "internal_write"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "check_entitlement"
-description = "Check coverage/entitlement for a registration"
+description = "Check coverage/entitlement for a registration as of a date and optional failure type: in-window, days remaining, covered/excluded, deductible, remaining cap, and an overall entitled flag."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "submit_claim"
-description = "File a warranty claim"
+description = "File (submit) a warranty claim against a registration. Coverage is validated at approval."
 risk_class = "internal_write"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "get_claim"
-description = "Get a claim by id"
+description = "Get a claim by id."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "list_claims"
-description = "List claims by registration/status"
+description = "List claims, optionally by registration and/or status."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "triage_claim"
-description = "Move a submitted claim to triaged"
+description = "Move a submitted claim to triaged (under review)."
 risk_class = "internal_write"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "validate_claim"
-description = "Validate coverage without changing the claim (read-only)"
+description = "Validate a claim's coverage WITHOUT changing it (adjudication pre-check): window, covered failure, exclusions, cap, and the payable amount (claim minus deductible, capped). Read-only."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "approve_claim"
-description = "Approve a claim and set payout — gated (financial)"
+description = "Approve a claim. Re-runs coverage validation and refuses if not covered; sets the payable amount (net of deductible/cap) and accrues against the plan cap. Financial decision — gated."
 risk_class = "external_write"
 requires_approval = true
 credential_bindings = []
 
 [[tools]]
 name = "reject_claim"
-description = "Reject a claim with a reason — gated (contractual)"
+description = "Reject a claim with a reason. Contractual decision — gated."
 risk_class = "external_write"
 requires_approval = true
 credential_bindings = []
 
 [[tools]]
 name = "close_claim"
-description = "Close a claim (terminal)"
+description = "Close a claim (terminal)."
 risk_class = "internal_write"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "issue_rma"
-description = "Issue an RMA for an approved claim — gated (remedy)"
+description = "Issue an RMA for an APPROVED claim (disposition: repair/replace/refund); moves the claim to in_repair. Commits a remedy — gated."
 risk_class = "external_write"
 requires_approval = true
 credential_bindings = []
 
 [[tools]]
 name = "update_rma_status"
-description = "Update an RMA's status"
+description = "Update an RMA's status (issued/received/repaired/shipped/closed). Closing the RMA closes the claim."
 risk_class = "internal_write"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "get_rma"
-description = "Get an RMA by id"
+description = "Get an RMA by id."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "claims_analytics"
-description = "Claims analytics: status mix, approval rate, payouts"
+description = "Claims analytics: counts by status, approval rate, total approved payout, and average payout — optionally scoped to a product."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []
 
 [[tools]]
 name = "audit_log"
-description = "Recent audit-trail entries"
+description = "Recent audit-trail entries (most recent first)."
 risk_class = "read_only"
 requires_approval = false
 credential_bindings = []

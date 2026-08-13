@@ -87,7 +87,7 @@ pub struct AuditLogInput { #[serde(default = "dlimit")] pub limit: usize }
 #[derive(Clone)]
 pub struct WarrantyServer { pub store: Arc<WarrantyStore> }
 
-#[tool_router(server_handler)]
+#[tool_router]
 impl WarrantyServer {
     // products
     #[tool(description = "Create a product in the catalog.")]
@@ -246,4 +246,11 @@ impl HealthCheck for WarrantyServer {
     async fn check_health(&self) -> HealthStatus {
         HealthStatus { healthy: true, message: Some("operational".into()), latency_ms: Some(1) }
     }
+}
+
+adk_mcp_sdk::mcp_2026_server! {
+    server: WarrantyServer,
+    task_tools: [],
+    approval_tools: ["approve_claim", "reject_claim", "issue_rma"],
+    cache_ttl_ms: 60_000,
 }
